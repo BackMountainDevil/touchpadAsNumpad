@@ -22,6 +22,15 @@ print("x in [%d, %d], y in [%d, %d]" % (ABS_X_MIN, ABS_X_MAX, ABS_Y_MIN, ABS_Y_M
 x, y, absx, absy = 0, 0, 0, 0
 isKey = False
 isDone = False
+LINE_X = (ABS_X_MAX - ABS_X_MIN) // 4
+LINE_Y = (ABS_Y_MAX - ABS_Y_MIN) // 4
+OUT = [
+    [7, 4, 1, 0],
+    [8, 5, 2, 0],
+    [9, 6, 3, "."],
+    ["del", "+", "-", "enter"],
+    ["del", "+", "-", "enter"],
+]
 for e in touchpad.read_loop():
     # 获取触摸坐标
     if e.type == 3:  # EV_ABS
@@ -51,11 +60,6 @@ for e in touchpad.read_loop():
         # print("EV_SYN",e)
         # 根据坐标所在区域输出对应的内容
         if isDone:
-            if absx < (ABS_X_MAX // 3):
-                print("INFO, x in left", absx)
-            elif absx < (ABS_X_MAX * 0.6):
-                print("INFO, x in middle", absx)
-            else:
-                print("INFO, x in right", absx)
+            print(OUT[absx // LINE_X][absy // LINE_Y])
             isKey = False
             isDone = False
