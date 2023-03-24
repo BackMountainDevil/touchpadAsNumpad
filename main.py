@@ -28,8 +28,8 @@ OUT = [
     [7, 4, 1, 0],
     [8, 5, 2, 0],
     [9, 6, 3, "."],
-    ["del", "+", "-", "enter"],
-    ["del", "+", "-", "enter"],
+    ["backspace", "+", "-", "enter"],
+    ["backspace", "+", "-", "enter"],
 ]
 for e in touchpad.read_loop():
     # 获取触摸坐标

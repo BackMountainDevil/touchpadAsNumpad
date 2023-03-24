@@ -9,7 +9,7 @@
 ## 布局
 
 ```
-7 8 9 del
+7 8 9 backspace
 4 5 6 +
 1 2 3 -
 0 0 . enter
@@ -19,7 +19,7 @@
 
 ```python
 OUT = [
-    [7, 8, 9, "del", "del"],
+    [7, 8, 9, "backspace", "backspace"],
     [4, 5, 6, "+", "+"],
     [1, 2, 3, "-", "-"],
     [0, 0, ".", "enter", "enter"],
