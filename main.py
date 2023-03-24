@@ -34,13 +34,7 @@ OUT = [
 for e in touchpad.read_loop():
     # 获取触摸坐标
     if e.type == 3:  # EV_ABS
-        if e.code == 53:  # ABS_MT_POSITION_X
-            x = e.value
-            # print("update x:%d"%x)
-        elif e.code == 54:  # ABS_MT_POSITION_Y
-            y = e.value
-            # print("update y:%d"%y)
-        elif e.code == 0:  # ABS_X
+        if e.code == 0:  # ABS_X
             absx = e.value
             # print("update ABS_X:%d"%absx)
         elif e.code == 1:  # ABS_Y
@@ -48,7 +42,6 @@ for e in touchpad.read_loop():
             # print("update ABS_Y:%d"%absy)
         else:
             pass  # such as 47, 57
-        # print("EV_ABS event, x:%d\ty:%d\tabs_x:%d\tabs_y:%d"%(x,y,absx,absy))
     elif e.type == 1:  # EV_KEY
         # print("EV_KEY",e)    # 330 BTN_TOUCH    325 BTN_TOOL_FINGER
         if e.code == 330:
@@ -60,6 +53,7 @@ for e in touchpad.read_loop():
         # print("EV_SYN",e)
         # 根据坐标所在区域输出对应的内容
         if isDone:
-            print(OUT[absx // LINE_X][absy // LINE_Y])
+            key = OUT[absx // LINE_X][absy // LINE_Y]
+            print(key)
             isKey = False
             isDone = False
