@@ -1,4 +1,5 @@
 import evdev
+import keyboard
 
 # 查找触摸板设备对于的文件路径
 devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
@@ -25,11 +26,11 @@ isDone = False
 LINE_X = (ABS_X_MAX - ABS_X_MIN) // 4
 LINE_Y = (ABS_Y_MAX - ABS_Y_MIN) // 4
 OUT = [
-    [7, 4, 1, 0],
-    [8, 5, 2, 0],
-    [9, 6, 3, "."],
-    ["backspace", "+", "-", "enter"],
-    ["backspace", "+", "-", "enter"],
+    ["7", "4", "1", "0"],
+    ["8", "5", "2", "0"],
+    ["9", "6", "3", "."],
+    ["backspace", "shift+=", "-", "enter"],
+    ["backspace", "shift+=", "-", "enter"],
 ]
 for e in touchpad.read_loop():
     # 获取触摸坐标
@@ -55,5 +56,6 @@ for e in touchpad.read_loop():
         if isDone:
             key = OUT[absx // LINE_X][absy // LINE_Y]
             print(key)
+            keyboard.press_and_release(key) # 模拟键盘按键按下事件
             isKey = False
             isDone = False
