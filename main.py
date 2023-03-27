@@ -1,5 +1,21 @@
 import evdev
 import keyboard
+import subprocess
+
+TOUCHPAD_DEVICE_ID = 14 # 触摸板设备的 ID
+
+ENABLE_TOUCHPAD=True
+def dis_en_touchpad():
+    global ENABLE_TOUCHPAD
+    ENABLE_TOUCHPAD=not ENABLE_TOUCHPAD
+    if ENABLE_TOUCHPAD:
+        # 启用触摸板设备
+        subprocess.run(["xinput", "set-prop", str(TOUCHPAD_DEVICE_ID), "Device Enabled", "1"])
+    else:
+        # 禁用触摸板设备
+        subprocess.run(["xinput", "set-prop", str(TOUCHPAD_DEVICE_ID), "Device Enabled", "0"]) 
+    print(ENABLE_TOUCHPAD)
+keyboard.add_hotkey('ctrl+shift+alt+n', dis_en_touchpad,timeout=3)
 
 # 查找触摸板设备对于的文件路径
 devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
@@ -32,7 +48,10 @@ OUT = [
     ["backspace", "shift+=", "-", "enter"],
     ["backspace", "shift+=", "-", "enter"],
 ]
+
 for e in touchpad.read_loop():
+    if ENABLE_TOUCHPAD: # 普通模式就跳过本次循环
+        continue
     # 获取触摸坐标
     if e.type == 3:  # EV_ABS
         if e.code == 0:  # ABS_X
