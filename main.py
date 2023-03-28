@@ -10,10 +10,10 @@ def dis_en_touchpad():
     ENABLE_TOUCHPAD=not ENABLE_TOUCHPAD
     if ENABLE_TOUCHPAD:
         # 启用触摸板设备
-        subprocess.run(["xinput", "set-prop", str(TOUCHPAD_DEVICE_ID), "Device Enabled", "1"])
+        subprocess.run(["xinput", "enable", str(TOUCHPAD_DEVICE_ID)])
     else:
         # 禁用触摸板设备
-        subprocess.run(["xinput", "set-prop", str(TOUCHPAD_DEVICE_ID), "Device Enabled", "0"]) 
+        subprocess.run(["xinput", "disable", str(TOUCHPAD_DEVICE_ID)]) 
     print(ENABLE_TOUCHPAD)
 keyboard.add_hotkey('ctrl+shift+alt+n', dis_en_touchpad,timeout=3)
 
