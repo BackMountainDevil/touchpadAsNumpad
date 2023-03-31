@@ -1,14 +1,11 @@
 import evdev
 import keyboard
 import subprocess
-import os
 
 
 def get_touchpad_id():
-    """Get the Touchpad device id in "xinput list"
-
-    Returns:
-        int: Touchpad device id. If not exist, return None
+    """
+    Get the touchpad device id. If not exist, return None
     """
     # Run the command "xinput list" and capture the output
     output = subprocess.check_output(["xinput", "list"]).decode("utf-8")
@@ -21,18 +18,19 @@ def get_touchpad_id():
         # If the line contains "TouchPad", extract the ID and return -1
         if "TouchPad" in line or "Touchpad" in line:
             return line.split("id=")[1].split("\t")[0]
-    return -1
+    return None
 
 
 TOUCHPAD_DEVICE_ID = get_touchpad_id()  # 触摸板设备的 ID
-if TOUCHPAD_DEVICE_ID == -1:
-    os.exist()
-
 ENABLE_TOUCHPAD = True
 
+if TOUCHPAD_DEVICE_ID is None:
+    print("Touchpad device not found")
+    sys.exist(-1)
 
-def dis_en_touchpad():
-    global ENABLE_TOUCHPAD
+
+def toggle_touchpad():
+    global TOUCHPAD_DEVICE_ID, ENABLE_TOUCHPAD
     ENABLE_TOUCHPAD = not ENABLE_TOUCHPAD
     if ENABLE_TOUCHPAD:
         # 启用触摸板设备
@@ -43,13 +41,14 @@ def dis_en_touchpad():
     print(ENABLE_TOUCHPAD)
 
 
-keyboard.add_hotkey("ctrl+shift+alt+n", dis_en_touchpad, timeout=3)
+keyboard.add_hotkey("ctrl+shift+alt+n", toggle_touchpad, timeout=3)
 
 # 查找触摸板设备对于的文件路径
 devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
 for device in devices:
     if "Touchpad" in device.name:
         print("DEBUG find Touchpad", device.name, device.path, device.phys)
+        global touchpad
         touchpad = evdev.InputDevice(device.path)  # Touch Pad 对应文件
         break
 # 获取坐标轴的范围
