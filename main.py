@@ -44,14 +44,19 @@ def toggle_touchpad():
 
 keyboard.add_hotkey("ctrl+shift+alt+n", toggle_touchpad, timeout=3)
 
-# 查找触摸板设备对于的文件路径
-devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
-for device in devices:
-    if "Touchpad" in device.name:
-        print("DEBUG find Touchpad", device.name, device.path, device.phys)
-        global touchpad
-        touchpad = evdev.InputDevice(device.path)  # Touch Pad 对应文件
-        break
+
+def find_touchpad():
+    # 查找触摸板设备对于的文件路径
+    devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+    for device in devices:
+        if "Touchpad" in device.name:
+            print("DEBUG find Touchpad", device.name, device.path, device.phys)
+            touchpad = evdev.InputDevice(device.path)  # Touch Pad 对应文件
+            return touchpad
+    return None
+
+
+touchpad = find_touchpad()
 # 获取坐标轴的范围
 abs = touchpad.capabilities()[3]
 ABS_X_MIN, ABS_X_MAX = 0, 0
