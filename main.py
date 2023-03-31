@@ -82,33 +82,39 @@ class TouchpadAsNumpad:
         )
 
     def run(self):
-        for e in self.touchpad.read_loop():
-            if self.enable_touchpad:  # 普通模式就跳过本次循环
-                continue
-            # 获取触摸坐标
-            if e.type == 3:  # EV_ABS
-                if e.code == 0:  # ABS_X
-                    self.absx = e.value
-                    # print("update ABS_X:%d"%absx)
-                elif e.code == 1:  # ABS_Y
-                    self.absy = e.value
-                    # print("update ABS_Y:%d"%absy)
-            elif e.type == 1:  # EV_KEY
-                # print("EV_KEY",e)    # 330 BTN_TOUCH    325 BTN_TOOL_FINGER
-                if e.code == 330:
-                    if e.value == 1:
-                        self.isKey = True
-                    elif e.value == 0 and self.isKey:
-                        self.isDone = True
-            elif e.type == 0:  # EV_SYN
-                # print("EV_SYN",e)
-                # 根据坐标所在区域输出对应的内容
-                if self.isDone:
-                    key = self.OUT[self.absx // self.LINE_X][self.absy // self.LINE_Y]
-                    print(key)
-                    keyboard.press_and_release(key)  # 模拟键盘按键按下事件
-                    self.isKey = False
-                    self.isDone = False
+        try:
+            for e in self.touchpad.read_loop():
+                if self.enable_touchpad:  # 普通模式就跳过本次循环
+                    continue
+                # 获取触摸坐标
+                if e.type == 3:  # EV_ABS
+                    if e.code == 0:  # ABS_X
+                        self.absx = e.value
+                        # print("update ABS_X:%d"%absx)
+                    elif e.code == 1:  # ABS_Y
+                        self.absy = e.value
+                        # print("update ABS_Y:%d"%absy)
+                elif e.type == 1:  # EV_KEY
+                    # print("EV_KEY",e)    # 330 BTN_TOUCH    325 BTN_TOOL_FINGER
+                    if e.code == 330:
+                        if e.value == 1:
+                            self.isKey = True
+                        elif e.value == 0 and self.isKey:
+                            self.isDone = True
+                elif e.type == 0:  # EV_SYN
+                    # print("EV_SYN",e)
+                    # 根据坐标所在区域输出对应的内容
+                    if self.isDone:
+                        key = self.OUT[self.absx // self.LINE_X][self.absy // self.LINE_Y]
+                        print(key)
+                        keyboard.press_and_release(key)  # 模拟键盘按键按下事件
+                        self.isKey = False
+                        self.isDone = False
+        except Exception as e:
+            print("debug", e)
+        finally:
+            if not self.enable_touchpad:    # disable touchpad when exit. enable it
+                self.toggle_touchpad()
 
 
 if __name__ == "__main__":
