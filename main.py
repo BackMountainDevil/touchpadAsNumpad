@@ -64,7 +64,7 @@ for k, v in abs:
 print("x in [%d, %d], y in [%d, %d]" % (ABS_X_MIN, ABS_X_MAX, ABS_Y_MIN, ABS_Y_MAX))
 
 
-x, y, absx, absy = 0, 0, 0, 0
+absx, absy = 0, 0
 isKey = False
 isDone = False
 LINE_X = (ABS_X_MAX - ABS_X_MIN) // 4
@@ -88,8 +88,6 @@ for e in touchpad.read_loop():
         elif e.code == 1:  # ABS_Y
             absy = e.value
             # print("update ABS_Y:%d"%absy)
-        else:
-            pass  # such as 47, 57
     elif e.type == 1:  # EV_KEY
         # print("EV_KEY",e)    # 330 BTN_TOUCH    325 BTN_TOOL_FINGER
         if e.code == 330:
