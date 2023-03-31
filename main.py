@@ -1,6 +1,7 @@
 import evdev
 import keyboard
 import subprocess
+import sys
 
 
 def get_touchpad_id():
@@ -26,7 +27,7 @@ ENABLE_TOUCHPAD = True
 
 if TOUCHPAD_DEVICE_ID is None:
     print("Touchpad device not found")
-    sys.exist(-1)
+    sys.exit(-1)
 
 
 def toggle_touchpad():
