@@ -1,21 +1,49 @@
 import evdev
 import keyboard
 import subprocess
+import os
 
-TOUCHPAD_DEVICE_ID = 14 # 触摸板设备的 ID
 
-ENABLE_TOUCHPAD=True
+def get_touchpad_id():
+    """Get the Touchpad device id in "xinput list"
+
+    Returns:
+        int: Touchpad device id. If not exist, return None
+    """
+    # Run the command "xinput list" and capture the output
+    output = subprocess.check_output(["xinput", "list"]).decode("utf-8")
+
+    # Split the output by lines
+    lines = output.split("\n")
+
+    # Loop through each line
+    for line in lines:
+        # If the line contains "TouchPad", extract the ID and return -1
+        if "TouchPad" in line or "Touchpad" in line:
+            return line.split("id=")[1].split("\t")[0]
+    return -1
+
+
+TOUCHPAD_DEVICE_ID = get_touchpad_id()  # 触摸板设备的 ID
+if TOUCHPAD_DEVICE_ID == -1:
+    os.exist()
+
+ENABLE_TOUCHPAD = True
+
+
 def dis_en_touchpad():
     global ENABLE_TOUCHPAD
-    ENABLE_TOUCHPAD=not ENABLE_TOUCHPAD
+    ENABLE_TOUCHPAD = not ENABLE_TOUCHPAD
     if ENABLE_TOUCHPAD:
         # 启用触摸板设备
         subprocess.run(["xinput", "enable", str(TOUCHPAD_DEVICE_ID)])
     else:
         # 禁用触摸板设备
-        subprocess.run(["xinput", "disable", str(TOUCHPAD_DEVICE_ID)]) 
+        subprocess.run(["xinput", "disable", str(TOUCHPAD_DEVICE_ID)])
     print(ENABLE_TOUCHPAD)
-keyboard.add_hotkey('ctrl+shift+alt+n', dis_en_touchpad,timeout=3)
+
+
+keyboard.add_hotkey("ctrl+shift+alt+n", dis_en_touchpad, timeout=3)
 
 # 查找触摸板设备对于的文件路径
 devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
@@ -50,7 +78,7 @@ OUT = [
 ]
 
 for e in touchpad.read_loop():
-    if ENABLE_TOUCHPAD: # 普通模式就跳过本次循环
+    if ENABLE_TOUCHPAD:  # 普通模式就跳过本次循环
         continue
     # 获取触摸坐标
     if e.type == 3:  # EV_ABS
@@ -75,6 +103,6 @@ for e in touchpad.read_loop():
         if isDone:
             key = OUT[absx // LINE_X][absy // LINE_Y]
             print(key)
-            keyboard.press_and_release(key) # 模拟键盘按键按下事件
+            keyboard.press_and_release(key)  # 模拟键盘按键按下事件
             isKey = False
             isDone = False
