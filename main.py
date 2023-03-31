@@ -23,7 +23,6 @@ class TouchpadAsNumpad:
             ["8", "5", "2", "0"],
             ["9", "6", "3", "."],
             ["backspace", "shift+=", "-", "enter"],
-            ["backspace", "shift+=", "-", "enter"],
         ]
         if self.touchpad_device_id is None:
             print("Touchpad device not found")
@@ -105,7 +104,12 @@ class TouchpadAsNumpad:
                     # print("EV_SYN",e)
                     # 根据坐标所在区域输出对应的内容
                     if self.isDone:
-                        key = self.OUT[self.absx // self.LINE_X][self.absy // self.LINE_Y]
+                        x, y = self.absx // self.LINE_X, self.absy // self.LINE_Y
+                        if x >= 4:
+                            x = x - 1
+                        if y >= 4:
+                            y = y - 1
+                        key = self.OUT[x][y]
                         print(key)
                         keyboard.press_and_release(key)  # 模拟键盘按键按下事件
                         self.isKey = False
@@ -113,7 +117,7 @@ class TouchpadAsNumpad:
         except Exception as e:
             print("debug", e)
         finally:
-            if not self.enable_touchpad:    # disable touchpad when exit. enable it
+            if not self.enable_touchpad:  # disable touchpad when exit. enable it
                 self.toggle_touchpad()
 
 
