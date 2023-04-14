@@ -1,7 +1,8 @@
-import evdev
-import keyboard
 import subprocess
 import sys
+
+import evdev
+from pynput.keyboard import Controller, Key
 
 
 class TouchpadAsNumpad:
@@ -10,9 +11,6 @@ class TouchpadAsNumpad:
         self.touchpad = self.find_touchpad()
         self.get_abs_range()
         self.enable_touchpad = True  # True 代表触摸板处于普通模式，False代表小键盘模式
-        keyboard.add_hotkey(
-            "ctrl+shift+alt+n", self.toggle_touchpad, timeout=3
-        )  # 模式切换监听
 
         self.isKey = False  # 触摸板是否按下
         self.isDone = False  # 触摸板是否按下并释放
@@ -22,11 +20,14 @@ class TouchpadAsNumpad:
             ["7", "4", "1", "0"],
             ["8", "5", "2", "0"],
             ["9", "6", "3", "."],
-            ["backspace", "shift+=", "-", "enter"],
+            ["backspace", "+", "-", "enter"],
         ]
         if self.touchpad_device_id is None:
             print("Touchpad device not found")
             sys.exit(-1)
+        self.keyboard = Controller()  # 初始化键盘控制器
+        if not self.enable_touchpad:  # 如果默认是小键盘模式，则要禁用触摸板
+            subprocess.run(["xinput", "disable", str(self.touchpad_device_id)])
 
     def get_touchpad_id(self):
         """
@@ -111,7 +112,15 @@ class TouchpadAsNumpad:
                             y = y - 1
                         key = self.OUT[x][y]
                         print(key)
-                        keyboard.press_and_release(key)  # 模拟键盘按键按下事件
+                        # 模拟键盘按键按下事件
+                        if key == "backspace":  # 特殊按键
+                            self.keyboard.press(Key.backspace)
+                            self.keyboard.release(Key.backspace)
+                        elif key == "enter":
+                            self.keyboard.press(Key.enter)
+                            self.keyboard.release(Key.enter)
+                        else:
+                            self.keyboard.press(key)
                         self.isKey = False
                         self.isDone = False
         except Exception as e:
