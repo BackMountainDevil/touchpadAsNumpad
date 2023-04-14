@@ -41,3 +41,10 @@ OUT = [
 
 `xinput list` 可以获取到触摸板设备的id，`xinput list-props device` 可以获取到设备有哪些属性和对应的编号。根据前面两条指令可以得到“Device Enabled (162)”，`xinput set-prop 14 162 0`的意思是把设备14（因设备而异，我的触控板ID是14），162就是前面得到的属性，0就是关闭这个属性（1是开启），实测表明：关闭该属性不能移动鼠标，按钮无效、滚动无效，但是可以响应多指事件。
 
+# 通知
+
+QSystemTrayIcon 可以发送通知，结合 QMenu 还可以加一个退出按钮，但是和代码结果起来效果就变了。copilot 还给刘个建议是 `from gi.repository import Notify`。搜索引擎得到一个 `subprocess.Popen(['notify-send', summary, body])`，效果正好，但是用root运行就变的异常了。
+
+# Refer
+
+[How do I send text messages to the notification bubbles? 2012](https://askubuntu.com/questions/108764/how-do-i-send-text-messages-to-the-notification-bubbles)
