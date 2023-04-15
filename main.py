@@ -6,6 +6,14 @@ from pynput import keyboard
 from pynput.keyboard import Controller, Key, KeyCode
 
 
+KEY_MAP = {
+    Key.ctrl_l: "ctrl",
+    Key.ctrl_r: "ctrl",
+    Key.alt_l: "alt",
+    Key.alt_r: "alt",
+}
+
+
 def key_string(key):
     """将按键键码转换为方便对比的字符
 
@@ -13,11 +21,12 @@ def key_string(key):
         key (pynput.keyboard._xorg.KeyCode): 按键键码
 
     Returns:
-        str: 按键对应的字符
+        str: 按键对应的字符 或 None
     """
-    key = str(KeyCode.from_char(key))
-    key = key.replace("Key.", "").replace('"', "")
-    key = eval(key)
+    if isinstance(key, KeyCode):
+        key = key.char
+    elif isinstance(key, Key):
+        key = KEY_MAP.get(key, None)  # 不在表中的返回 None
     return key
 
 
@@ -165,20 +174,21 @@ class TouchpadAsNumpad:
         key: 按键对应键码
         """
         key = key_string(key)
-        if key == "ctrl" or key == "ctrl_r":
+        if key and key == "ctrl":
             self.ctrl_pressed = True
-        elif key == "alt" or key == "alt_r":
+        elif key and key == "alt":
             self.alt_pressed = True
-        elif key == "n" and self.ctrl_pressed and self.alt_pressed:
+        elif key and key == "n" and self.ctrl_pressed and self.alt_pressed:
             self.toggle_touchpad()
 
     def on_release(self, key):
         """
         键盘抬起回调事件，清除快捷键的标志位
         """
-        if key == "ctrl" or key == "ctrl_r":
+        key = key_string(key)
+        if key and key == "ctrl":
             self.ctrl_pressed = False
-        elif key == "alt" or key == "alt_r":
+        elif key and key == "alt":
             self.alt_pressed = False
 
 
