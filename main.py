@@ -73,9 +73,16 @@ class TouchpadAsNumpad:
         if self.enable_touchpad:
             # 启用触摸板设备
             subprocess.run(["xinput", "enable", str(self.touchpad_device_id)])
+            # 通知用户模式切换方式
+            subprocess.Popen(
+                ["notify-send", "Touchpad enable", "use ctrl+alt+n to turn to numpad"]
+            )
         else:
             # 禁用触摸板设备
             subprocess.run(["xinput", "disable", str(self.touchpad_device_id)])
+            subprocess.Popen(
+                ["notify-send", "Numpad enable", "use ctrl+alt+n to enable Touchpad"]
+            )
         print(self.enable_touchpad)
 
     def find_touchpad(self):
