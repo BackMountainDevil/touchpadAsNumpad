@@ -14,7 +14,7 @@ def key_string(key):
 
     Returns:
         str: 按键对应的字符
-    """    
+    """
     key = str(KeyCode.from_char(key))
     key = key.replace("Key.", "").replace('"', "")
     key = eval(key)
@@ -42,12 +42,12 @@ class TouchpadAsNumpad:
             print("Touchpad device not found")
             sys.exit(-1)
         self.keyboard = Controller()  # 初始化键盘控制器
-        self.ctrl_pressed = False   # 模式切换快捷键 ctrl 的标志位
-        self.alt_pressed = False    # 模式切换快捷键 alt 的标志位
+        self.ctrl_pressed = False  # 模式切换快捷键 ctrl 的标志位
+        self.alt_pressed = False  # 模式切换快捷键 alt 的标志位
         self.listener = keyboard.Listener(
             on_press=self.on_press, on_release=self.on_release
-        )   # 设置键盘监听的回调函数
-        self.listener.start()   # 启动监听模式切换快捷键
+        )  # 设置键盘监听的回调函数
+        self.listener.start()  # 启动监听模式切换快捷键
         if not self.enable_touchpad:  # 如果默认是小键盘模式，则要禁用触摸板
             subprocess.run(["xinput", "disable", str(self.touchpad_device_id)])
 
