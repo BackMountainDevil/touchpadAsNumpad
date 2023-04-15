@@ -2,7 +2,23 @@ import subprocess
 import sys
 
 import evdev
-from pynput.keyboard import Controller, Key
+from pynput import keyboard
+from pynput.keyboard import Controller, Key, KeyCode
+
+
+def key_string(key):
+    """将按键键码转换为方便对比的字符
+
+    Args:
+        key (pynput.keyboard._xorg.KeyCode): 按键键码
+
+    Returns:
+        str: 按键对应的字符
+    """    
+    key = str(KeyCode.from_char(key))
+    key = key.replace("Key.", "").replace('"', "")
+    key = eval(key)
+    return key
 
 
 class TouchpadAsNumpad:
@@ -26,6 +42,12 @@ class TouchpadAsNumpad:
             print("Touchpad device not found")
             sys.exit(-1)
         self.keyboard = Controller()  # 初始化键盘控制器
+        self.ctrl_pressed = False   # 模式切换快捷键 ctrl 的标志位
+        self.alt_pressed = False    # 模式切换快捷键 alt 的标志位
+        self.listener = keyboard.Listener(
+            on_press=self.on_press, on_release=self.on_release
+        )   # 设置键盘监听的回调函数
+        self.listener.start()   # 启动监听模式切换快捷键
         if not self.enable_touchpad:  # 如果默认是小键盘模式，则要禁用触摸板
             subprocess.run(["xinput", "disable", str(self.touchpad_device_id)])
 
@@ -128,6 +150,29 @@ class TouchpadAsNumpad:
         finally:
             if not self.enable_touchpad:  # disable touchpad when exit. enable it
                 self.toggle_touchpad()
+
+    def on_press(self, key):
+        """
+        键盘按下回调事件，若 ctrl+alt+n 同时按下，则调用 toggle_touchpad 进行模式切换
+
+        key: 按键对应键码
+        """
+        key = key_string(key)
+        if key == "ctrl" or key == "ctrl_r":
+            self.ctrl_pressed = True
+        elif key == "alt" or key == "alt_r":
+            self.alt_pressed = True
+        elif key == "n" and self.ctrl_pressed and self.alt_pressed:
+            self.toggle_touchpad()
+
+    def on_release(self, key):
+        """
+        键盘抬起回调事件，清除快捷键的标志位
+        """
+        if key == "ctrl" or key == "ctrl_r":
+            self.ctrl_pressed = False
+        elif key == "alt" or key == "alt_r":
+            self.alt_pressed = False
 
 
 if __name__ == "__main__":
