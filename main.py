@@ -33,6 +33,9 @@ def key_string(key):
 class TouchpadAsNumpad:
     def __init__(self):
         self.touchpad_device_id = self.get_touchpad_id()  # 触摸板设备的 ID
+        if self.touchpad_device_id is None:
+            print("Touchpad device not found")
+            sys.exit(-1)
         self.touchpad = self.find_touchpad()
         self.get_abs_range()
         self.enable_touchpad = True  # True 代表触摸板处于普通模式，False代表小键盘模式
@@ -47,9 +50,6 @@ class TouchpadAsNumpad:
             ["9", "6", "3", "."],
             ["backspace", "+", "-", "enter"],
         ]
-        if self.touchpad_device_id is None:
-            print("Touchpad device not found")
-            sys.exit(-1)
         self.keyboard = Controller()  # 初始化键盘控制器
         self.ctrl_pressed = False  # 模式切换快捷键 ctrl 的标志位
         self.alt_pressed = False  # 模式切换快捷键 alt 的标志位
